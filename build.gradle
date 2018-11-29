@@ -15,7 +15,10 @@ dependencies {
     // Use the latest Groovy version for building this library
     compile 'org.codehaus.groovy:groovy-all:2.4.12'
     compile 'org.hibernate:hibernate-core:5.1.5.Final'
+
+    // see https://github.com/indexdata/cql-java
     compile 'org.z3950.zing:cql-java:1.13'
+    compile 'log4j:log4j:1.2.17'
 
     // Use the awesome Spock testing and specification framework
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
