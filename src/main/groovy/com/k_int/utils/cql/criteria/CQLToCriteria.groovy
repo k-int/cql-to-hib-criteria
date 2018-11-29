@@ -10,13 +10,41 @@ import groovy.util.logging.Log4j
 @Log4j
 class CQLToCriteria {
 
+  private static String INDENT = '   ';
+
   DetachedCriteria build(String query) {
     DetachedCriteria result = null;
 
     CQLNode cql_root = parseCQL(query);
     log.debug("Result of parse: ${cql_root.toCQL()}");
+    visit(cql_root);
 
     return result;
+  }
+
+  private void visit(CQLNode node) {
+    visit(0,node);
+  }
+
+  private void visit(int depth, CQLNode node) {
+    log.debug("${INDENT*depth}${depth} ${node.class.name}");
+    switch(node.class) {
+      case CQLSortNode:
+        visit(depth+1,((CQLSortNode)node).getSubtree());
+        break;
+      case CQLBooleanNode:
+        visit(depth+1,((CQLBooleanNode)node).getLeftOperand());
+        log.debug((INDENT*depth)+((CQLBooleanNode)node).getOperator());
+        visit(depth+1,((CQLBooleanNode)node).getRightOperand());
+        break;
+      case CQLTermNode:
+        // https://github.com/indexdata/cql-java/blob/master/src/main/java/org/z3950/zing/cql/CQLTermNode.java
+        log.debug((INDENT*depth)+((CQLTermNode)node).getIndex());
+        break;
+      default:
+        log.debug("${INDENT*depth}Unhandled node type: ${node.class.name}");
+        break;
+    }
   }
 
   CQLNode parseCQL(String cql) {
